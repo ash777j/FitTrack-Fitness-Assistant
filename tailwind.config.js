@@ -4,33 +4,36 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: {
-          primary: '#121212',
-          secondary: '#1E1E1E',
-          tertiary: '#2D2D2D'
-        },
-        neon: {
-          blue: '#00FFFF',
-          green: '#39FF14'
-        },
-        text: {
-          primary: '#FFFFFF',
-          secondary: '#CCCCCC',
-          muted: '#999999'
-        },
-        metallic: {
-          light: '#AAAAAA',
-          medium: '#666666',
-          dark: '#333333'
-        }
-      },
+  background: {
+    primary: '#0A0A0A',
+    secondary: '#111111',
+    tertiary: '#1B1B1B'                           
+  },
+
+  primary: {
+    DEFAULT: '#E6392E',
+    dark: '#B71C1C',
+    light: '#FF5C4D'
+  },
+
+  accent: {
+    white: '#FFFFFF',
+    gray: '#A1A1AA'
+  },
+
+  glass: {
+    light: 'rgba(255,255,255,0.08)',
+    border: 'rgba(255,255,255,0.12)'
+  }
+},
       fontFamily: {
         sans: ['Poppins', 'sans-serif']
       },
-      boxShadow: {
-        'neon-blue': '0 0 5px #00FFFF, 0 0 10px #00FFFF',
-        'neon-green': '0 0 5px #39FF14, 0 0 10px #39FF14'
-      },
+      boxShadow:{
+   soft:'0 15px 40px rgba(0,0,0,.35)',
+   card:'0 8px 30px rgba(0,0,0,.45)',
+   glow:'0 0 40px rgba(230,57,46,.30)'
+},
       animation: {
         'pulse-neon': 'pulse-neon 2s infinite',
         'fade-in': 'fade-in 0.5s ease-in-out'
