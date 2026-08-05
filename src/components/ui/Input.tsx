@@ -10,39 +10,25 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, icon, error, fullWidth = true, className = '', ...props }, ref) => {
     return (
-      <div className={`mb-4 ${fullWidth ? 'w-full' : ''}`}>
+      <div className={`${fullWidth ? 'w-full' : ''} mb-4`}>
         {label && (
-          <label className="block text-text-secondary mb-2 text-sm font-medium">
+          <label className="block text-xs uppercase tracking-wider text-white/60 mb-2 font-medium">
             {label}
           </label>
         )}
         <div className="relative">
           {icon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-primary-300">
               {icon}
             </div>
           )}
           <input
             ref={ref}
-            className={`
-              bg-background-tertiary 
-              border ${error ? 'border-red-500' : 'border-metallic-dark focus:border-neon-blue'} 
-              text-text-primary 
-              rounded-md 
-              focus:outline-none 
-              focus:ring-1 
-              focus:ring-neon-blue
-              transition-colors 
-              duration-200
-              w-full
-              py-2 
-              ${icon ? 'pl-10 pr-3' : 'px-3'} 
-              ${className}
-            `}
+            className={`input-glass ${icon ? 'pl-11' : ''} ${className}`}
             {...props}
           />
         </div>
-        {error && <p className="mt-1 text-red-500 text-xs">{error}</p>}
+        {error && <p className="mt-1.5 text-xs text-red-400">{error}</p>}
       </div>
     );
   }

@@ -1,32 +1,28 @@
 import React, { useState } from 'react';
-import { Trophy, Award, Users, ArrowDown, ArrowUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, Award, Users, Lock, Sparkles, RefreshCw } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 
-// Sample data for badges
 const badgesData = [
-  { id: 1, name: 'First Workout', description: 'Completed your first workout', icon: '🏋️', earned: true, date: '2023-04-15' },
-  { id: 2, name: 'Week Streak', description: 'Worked out for 7 days in a row', icon: '🔥', earned: true, date: '2023-04-22' },
-  { id: 3, name: 'Morning Person', description: 'Completed 5 workouts before 8 AM', icon: '🌅', earned: true, date: '2023-05-01' },
-  { id: 4, name: 'Weight Loss', description: 'Lost 5kg since starting', icon: '⚖️', earned: false },
-  { id: 5, name: 'Marathon', description: 'Ran a total of 42.2km', icon: '🏃', earned: false },
-  { id: 6, name: 'Strength Guru', description: 'Lifted 5000kg total in one session', icon: '💪', earned: false },
-  { id: 7, name: 'Nutrition Master', description: 'Logged meals for 30 days straight', icon: '🥗', earned: false },
-  { id: 8, name: 'Early Achiever', description: 'Reached your first fitness goal', icon: '🎯', earned: false },
+  { id: 1, name: 'First Workout',    description: 'Completed your first workout',                   icon: '🏋️', earned: true,  date: '2023-04-15' },
+  { id: 2, name: 'Week Streak',      description: 'Worked out for 7 days in a row',                 icon: '🔥', earned: true,  date: '2023-04-22' },
+  { id: 3, name: 'Morning Person',   description: 'Completed 5 workouts before 8 AM',               icon: '🌅', earned: true,  date: '2023-05-01' },
+  { id: 4, name: 'Weight Loss',      description: 'Lost 5kg since starting',                        icon: '⚖️', earned: false },
+  { id: 5, name: 'Marathon',         description: 'Ran a total of 42.2km',                          icon: '🏃', earned: false },
+  { id: 6, name: 'Strength Guru',    description: 'Lifted 5000kg total in one session',             icon: '💪', earned: false },
+  { id: 7, name: 'Nutrition Master', description: 'Logged meals for 30 days straight',              icon: '🥗', earned: false },
+  { id: 8, name: 'Early Achiever',   description: 'Reached your first fitness goal',                icon: '🎯', earned: false }
 ];
-
-// Sample data for leaderboard
 const leaderboardData = [
-  { id: 1, name: 'Sarah Johnson', workouts: 32, streak: 15, badges: 6, avatar: '👩‍🦱' },
-  { id: 2, name: 'You', workouts: 28, streak: 12, badges: 3, avatar: '👤', isUser: true },
-  { id: 3, name: 'Michael Chen', workouts: 26, streak: 8, badges: 5, avatar: '👨' },
-  { id: 4, name: 'Emma Wilson', workouts: 24, streak: 6, badges: 4, avatar: '👱‍♀️' },
-  { id: 5, name: 'James Rodriguez', workouts: 22, streak: 4, badges: 3, avatar: '👨‍🦳' },
-  { id: 6, name: 'Aisha Patel', workouts: 20, streak: 3, badges: 3, avatar: '👩' },
-  { id: 7, name: 'David Kim', workouts: 18, streak: 0, badges: 2, avatar: '👨‍🦱' },
+  { id: 1, name: 'Sarah Johnson',    workouts: 32, streak: 15, badges: 6, avatar: '👩‍🦱' },
+  { id: 2, name: 'You',              workouts: 28, streak: 12, badges: 3, avatar: '👤', isUser: true },
+  { id: 3, name: 'Michael Chen',     workouts: 26, streak:  8, badges: 5, avatar: '👨' },
+  { id: 4, name: 'Emma Wilson',      workouts: 24, streak:  6, badges: 4, avatar: '👱‍♀️' },
+  { id: 5, name: 'James Rodriguez',  workouts: 22, streak:  4, badges: 3, avatar: '👨‍🦳' },
+  { id: 6, name: 'Aisha Patel',      workouts: 20, streak:  3, badges: 3, avatar: '👩' },
+  { id: 7, name: 'David Kim',        workouts: 18, streak:  0, badges: 2, avatar: '👨‍🦱' }
 ];
-
-// Motivational quotes for the page
 const motivationalQuotes = [
   "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't.",
   "The only bad workout is the one that didn't happen.",
@@ -41,198 +37,180 @@ const motivationalQuotes = [
 const GamificationPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'badges' | 'leaderboard'>('badges');
   const [quoteIndex, setQuoteIndex] = useState(Math.floor(Math.random() * motivationalQuotes.length));
-  
-  // Sort leaderboard by workouts desc
-  const sortedLeaderboard = [...leaderboardData].sort((a, b) => b.workouts - a.workouts);
+  const sorted = [...leaderboardData].sort((a, b) => b.workouts - a.workouts);
+  const earnedCount = badgesData.filter(b => b.earned).length;
 
   return (
-    <div className="min-h-screen pt-20 pb-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Achievements & Rewards</h1>
-          <p className="text-text-secondary">Track your badges and see how you rank against others</p>
+    <div className="relative pt-32 pb-20 px-5 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="mb-10">
+          <div className="chip mb-5">
+            <Sparkles size={12} className="text-primary-200" />
+            Achievements
+          </div>
+          <h1 className="text-5xl md:text-6xl font-light tracking-tightest">
+            Rewards & <span className="text-gradient-blue">ranking</span>
+          </h1>
+          <p className="text-white/55 mt-3 max-w-md">Track your badges, see how you rank against others, stay motivated.</p>
+        </motion.div>
+
+        {/* Quote */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <Card variant="strong" glow className="p-8 md:p-10 text-center mb-8 relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-primary/15 blur-3xl rounded-full pointer-events-none" />
+            <p className="relative text-2xl md:text-3xl font-light italic leading-relaxed max-w-2xl mx-auto text-gradient-blue">
+              "{motivationalQuotes[quoteIndex]}"
+            </p>
+            <div className="relative mt-6">
+              <Button variant="ghost" size="sm" icon={<RefreshCw size={12} />} onClick={() => setQuoteIndex(p => (p + 1) % motivationalQuotes.length)}>
+                New quote
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Tabs */}
+        <div className="flex gap-1 mb-6 p-1 rounded-full glass-soft border border-white/8 w-fit">
+          {([
+            { key: 'badges',      label: 'Badges',      icon: <Award size={14} /> },
+            { key: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={14} /> }
+          ] as const).map(t => (
+            <button
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm rounded-full transition-all ${
+                activeTab === t.key
+                  ? 'bg-primary text-white shadow-glow'
+                  : 'text-white/55 hover:text-white'
+              }`}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
         </div>
-        
-        {/* Motivational Quote */}
-        <Card className="p-6 mb-8 text-center">
-          <p className="text-xl italic text-neon-blue">"{motivationalQuotes[quoteIndex]}"</p>
-          <Button 
-            variant="outline" 
-            neonColor="green" 
-            size="sm" 
-            className="mt-4"
-            onClick={() => setQuoteIndex(prev => (prev + 1) % motivationalQuotes.length)}
-          >
-            New Quote
-          </Button>
-        </Card>
-        
-        {/* Tabs Navigation */}
-        <div className="flex mb-6">
-          <button
-            className={`flex items-center px-4 py-2 border-b-2 ${
-              activeTab === 'badges'
-                ? 'border-neon-green text-neon-green'
-                : 'border-transparent text-text-secondary hover:text-neon-blue'
-            }`}
-            onClick={() => setActiveTab('badges')}
-          >
-            <Award className="mr-2 h-5 w-5" />
-            Badges
-          </button>
-          <button
-            className={`flex items-center px-4 py-2 border-b-2 ${
-              activeTab === 'leaderboard'
-                ? 'border-neon-blue text-neon-blue'
-                : 'border-transparent text-text-secondary hover:text-neon-blue'
-            }`}
-            onClick={() => setActiveTab('leaderboard')}
-          >
-            <Trophy className="mr-2 h-5 w-5" />
-            Leaderboard
-          </button>
-        </div>
-        
-        {/* Badge Content */}
-        {activeTab === 'badges' && (
-          <div className="animate-fade-in">
-            <div className="mb-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold flex items-center">
-                  <Award className="mr-2 h-5 w-5 text-neon-green" />
-                  Your Badges
-                </h2>
-                <p className="text-text-secondary">
-                  {badgesData.filter(b => b.earned).length} / {badgesData.length} earned
-                </p>
+
+        <AnimatePresence mode="wait">
+          {activeTab === 'badges' ? (
+            <motion.div key="badges" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-xl font-medium">Your collection</h2>
+                <span className="text-sm text-white/55">{earnedCount} of {badgesData.length} earned</span>
               </div>
-              
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {badgesData.map(badge => (
-                  <Card 
-                    key={badge.id} 
-                    className={`p-4 relative overflow-hidden ${!badge.earned && 'opacity-60'}`}
-                    neonBorder={badge.earned ? 'green' : 'none'}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {badgesData.map((badge, i) => (
+                  <motion.div
+                    key={badge.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.5 }}
+                    whileHover={{ y: -4 }}
                   >
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">{badge.icon}</div>
-                      <h3 className="font-semibold">{badge.name}</h3>
-                      <p className="text-text-secondary text-sm mb-2">{badge.description}</p>
+                    <Card className={`p-5 text-center relative overflow-hidden h-full ${!badge.earned ? 'opacity-55' : 'hover:shadow-glow'}`}>
+                      <div className="text-5xl mb-3">{badge.icon}</div>
+                      <h3 className="text-sm font-medium mb-1 text-white">{badge.name}</h3>
+                      <p className="text-xs text-white/50 leading-relaxed mb-3">{badge.description}</p>
                       {badge.earned ? (
-                        <p className="text-neon-green text-xs">Earned on {badge.date}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-primary-200">Earned {badge.date}</p>
                       ) : (
-                        <p className="text-text-secondary text-xs">Not yet earned</p>
+                        <p className="text-[10px] uppercase tracking-wider text-white/35">Locked</p>
                       )}
-                    </div>
-                    
-                    {!badge.earned && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-background-primary/70">
-                        <div className="bg-background-secondary px-3 py-1 rounded-full text-text-secondary text-xs border border-metallic-dark">
-                          Locked
+                      {!badge.earned && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-ink-900/65 backdrop-blur-[2px]">
+                          <div className="glass-soft px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs text-white/60">
+                            <Lock size={11} /> Locked
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </Card>
+                      )}
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Leaderboard Content */}
-        {activeTab === 'leaderboard' && (
-          <div className="animate-fade-in">
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold flex items-center">
-                  <Trophy className="mr-2 h-5 w-5 text-neon-blue" />
-                  Leaderboard
-                </h2>
-                <div className="flex items-center text-text-secondary text-sm">
-                  <Users className="mr-1 h-4 w-4" />
-                  {leaderboardData.length} participants
+            </motion.div>
+          ) : (
+            <motion.div key="lb" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
+              <Card variant="strong" className="overflow-hidden">
+                <div className="flex items-center justify-between p-6 border-b border-white/8">
+                  <h2 className="text-xl font-medium flex items-center gap-2">
+                    <Trophy size={18} className="text-primary-300" /> Top athletes
+                  </h2>
+                  <div className="flex items-center gap-1.5 text-sm text-white/55">
+                    <Users size={14} /> {leaderboardData.length} participants
+                  </div>
                 </div>
-              </div>
-              
-              <Card className="overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-background-tertiary">
-                        <th className="py-3 px-4 text-left text-text-secondary text-sm font-medium">Rank</th>
-                        <th className="py-3 px-4 text-left text-text-secondary text-sm font-medium">User</th>
-                        <th className="py-3 px-4 text-right text-text-secondary text-sm font-medium">Workouts</th>
-                        <th className="py-3 px-4 text-right text-text-secondary text-sm font-medium">Streak</th>
-                        <th className="py-3 px-4 text-right text-text-secondary text-sm font-medium">Badges</th>
+                      <tr className="bg-white/3 text-xs uppercase tracking-wider text-white/45">
+                        <th className="py-3 px-6 text-left">Rank</th>
+                        <th className="py-3 px-6 text-left">Athlete</th>
+                        <th className="py-3 px-6 text-right">Workouts</th>
+                        <th className="py-3 px-6 text-right">Streak</th>
+                        <th className="py-3 px-6 text-right">Badges</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedLeaderboard.map((user, index) => (
-                        <tr 
-                          key={user.id} 
-                          className={`
-                            border-b border-metallic-dark 
-                            ${user.isUser ? 'bg-neon-blue/10' : 'hover:bg-background-tertiary/50'}
-                          `}
+                      {sorted.map((user, index) => (
+                        <motion.tr
+                          key={user.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className={`border-t border-white/6 transition-colors ${
+                            user.isUser ? 'bg-primary/8' : 'hover:bg-white/3'
+                          }`}
                         >
-                          <td className="py-4 px-4 text-left">
-                            {index === 0 ? (
-                              <div className="text-yellow-400 font-bold flex items-center">
-                                <Trophy className="h-4 w-4 mr-1" /> 1
-                              </div>
-                            ) : index === 1 ? (
-                              <div className="text-gray-300 font-bold flex items-center">
-                                <Trophy className="h-4 w-4 mr-1" /> 2
-                              </div>
-                            ) : index === 2 ? (
-                              <div className="text-amber-600 font-bold flex items-center">
-                                <Trophy className="h-4 w-4 mr-1" /> 3
+                          <td className="py-4 px-6">
+                            {index < 3 ? (
+                              <div className={`inline-flex items-center justify-center w-8 h-8 rounded-lg ${
+                                index === 0 ? 'bg-primary/20 border border-primary/40 shadow-glow' :
+                                index === 1 ? 'bg-white/8 border border-white/15' :
+                                              'bg-white/5 border border-white/10'
+                              }`}>
+                                <span className={`font-mono text-sm ${
+                                  index === 0 ? 'text-primary-200' : 'text-white/65'
+                                }`}>{index + 1}</span>
                               </div>
                             ) : (
-                              <span>{index + 1}</span>
+                              <span className="font-mono text-sm text-white/45 ml-3">{index + 1}</span>
                             )}
                           </td>
-                          <td className="py-4 px-4 text-left">
-                            <div className="flex items-center">
-                              <span className="text-xl mr-2">{user.avatar}</span>
-                              <span className={user.isUser ? 'font-semibold text-neon-blue' : ''}>{user.name}</span>
-                              {user.isUser && <span className="ml-2 text-xs bg-neon-blue/20 text-neon-blue px-2 py-0.5 rounded-full">You</span>}
+                          <td className="py-4 px-6">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xl">{user.avatar}</span>
+                              <div>
+                                <div className={`text-sm ${user.isUser ? 'text-primary-200 font-medium' : 'text-white'}`}>{user.name}</div>
+                              </div>
+                              {user.isUser && (
+                                <span className="text-[10px] uppercase tracking-wider bg-primary/20 text-primary-200 px-2 py-0.5 rounded-full border border-primary/30">You</span>
+                              )}
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-right font-medium">{user.workouts}</td>
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end">
-                              <span className={user.streak > 0 ? 'text-neon-green' : 'text-text-secondary'}>
-                                {user.streak} days
-                              </span>
-                              {user.streak > 0 && <span className="ml-1">🔥</span>}
-                            </div>
+                          <td className="py-4 px-6 text-right font-mono text-sm text-white">{user.workouts}</td>
+                          <td className="py-4 px-6 text-right">
+                            <span className={`font-mono text-sm ${user.streak > 0 ? 'text-primary-200' : 'text-white/40'}`}>
+                              {user.streak}d {user.streak > 0 && '🔥'}
+                            </span>
                           </td>
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end">
-                              <span>{user.badges}</span>
-                              <Award className="h-4 w-4 ml-1 text-neon-blue" />
-                            </div>
+                          <td className="py-4 px-6 text-right">
+                            <span className="inline-flex items-center gap-1.5 font-mono text-sm text-white">
+                              {user.badges} <Award size={12} className="text-primary-300" />
+                            </span>
                           </td>
-                        </tr>
+                        </motion.tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               </Card>
-            </div>
-            
-            <Card className="p-4 bg-background-tertiary text-center">
-              <p className="text-text-secondary mb-2">Keep working out to climb up the leaderboard!</p>
-              <p className="text-sm">
-                Next milestone: 
-                <span className="text-neon-green ml-1">
-                  {sortedLeaderboard.find(user => user.isUser)?.workouts! + 1} workouts
-                </span>
-              </p>
-            </Card>
-          </div>
-        )}
+
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-5">
+                <Card className="p-5 text-center text-sm text-white/65">
+                  Next milestone: <span className="text-primary-200 font-mono ml-1">{sorted.find(u => u.isUser)!.workouts + 1} workouts</span> — keep going.
+                </Card>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

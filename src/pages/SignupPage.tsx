@@ -1,124 +1,101 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Lock, User } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Mail, Lock, User, ArrowRight, Sparkles } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    name: '', email: '', password: '', confirmPassword: ''
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, just log the data
-    console.log('Signup attempt:', formData);
-    // In a real app, you would handle registration here
+    setLoading(true);
+    setTimeout(() => {
+      localStorage.setItem('isAuthenticated', 'true');
+      window.location.href = '/';
+    }, 600);
   };
 
   return (
-    <div className="min-h-screen pt-16 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-          <p className="text-text-secondary">Join FitTrack and start your fitness journey</p>
-        </div>
-        
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="Full Name"
-            type="text"
-            name="name"
-            placeholder="John Doe"
-            icon={<User className="h-5 w-5 text-metallic-light" />}
-            required
-            value={formData.name}
-            onChange={handleChange}
-          />
-          
-          <Input
-            label="Email"
-            type="email"
-            name="email"
-            placeholder="youremail@example.com"
-            icon={<Mail className="h-5 w-5 text-metallic-light" />}
-            required
-            value={formData.email}
-            onChange={handleChange}
-          />
-          
-          <Input
-            label="Password"
-            type="password"
-            name="password"
-            placeholder="********"
-            icon={<Lock className="h-5 w-5 text-metallic-light" />}
-            required
-            value={formData.password}
-            onChange={handleChange}
-          />
-          
-          <Input
-            label="Confirm Password"
-            type="password"
-            name="confirmPassword"
-            placeholder="********"
-            icon={<Lock className="h-5 w-5 text-metallic-light" />}
-            required
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          
-          <div className="mb-6">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-metallic-dark bg-background-tertiary focus:ring-neon-blue"
-                required
-              />
-              <span className="ml-2 text-sm text-text-secondary">
-                I agree to the{' '}
-                <Link to="#" className="text-neon-blue hover:underline">
-                  Terms of Service
-                </Link>
-                {' '}and{' '}
-                <Link to="#" className="text-neon-blue hover:underline">
-                  Privacy Policy
-                </Link>
-              </span>
-            </label>
+    <div className="relative min-h-screen pt-28 pb-12 px-5 sm:px-6 lg:px-8 flex items-center">
+      <div className="max-w-3xl w-full mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-center mb-10">
+          <div className="chip mx-auto mb-6">
+            <Sparkles size={12} className="text-primary-200" />
+            Free · No card required
           </div>
-          
-          <Button
-            type="submit"
-            variant="primary"
-            neonColor="green"
-            fullWidth
-            className="mb-4"
-          >
-            Create Account
-          </Button>
-          
-          <p className="text-center text-text-secondary text-sm">
-            Already have an account?{' '}
-            <Link to="/login" className="text-neon-blue hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </form>
-      </Card>
+          <h1 className="text-5xl md:text-7xl font-light tracking-tightest leading-[1.02] mb-4">
+            Create your <span className="text-gradient-blue">account</span>
+          </h1>
+          <p className="text-white/55 max-w-md mx-auto">Two minutes to set up. Lifelong access to AI fitness intelligence.</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+        >
+          <Card variant="strong" glow className="p-8 md:p-10">
+            <form onSubmit={handleSubmit}>
+              <div className="grid md:grid-cols-2 gap-x-5">
+                <Input
+                  label="Full name"
+                  type="text" name="name" placeholder="Alex Johnson"
+                  icon={<User className="h-4 w-4" />}
+                  required value={formData.name} onChange={handleChange}
+                />
+                <Input
+                  label="Email"
+                  type="email" name="email" placeholder="you@company.com"
+                  icon={<Mail className="h-4 w-4" />}
+                  required value={formData.email} onChange={handleChange}
+                />
+                <Input
+                  label="Password"
+                  type="password" name="password" placeholder="••••••••"
+                  icon={<Lock className="h-4 w-4" />}
+                  required value={formData.password} onChange={handleChange}
+                />
+                <Input
+                  label="Confirm password"
+                  type="password" name="confirmPassword" placeholder="••••••••"
+                  icon={<Lock className="h-4 w-4" />}
+                  required value={formData.confirmPassword} onChange={handleChange}
+                />
+              </div>
+
+              <label className="flex items-start gap-2 my-6 text-sm text-white/55">
+                <input type="checkbox" required className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary focus:ring-offset-0" />
+                <span>I agree to the <Link to="#" className="text-primary-200">Terms of Service</Link> and <Link to="#" className="text-primary-200">Privacy Policy</Link>.</span>
+              </label>
+
+              <Button
+                type="submit" variant="primary" size="lg" fullWidth
+                disabled={loading}
+                iconRight={<ArrowRight size={16} />}
+                className={loading ? 'opacity-70 pointer-events-none' : ''}
+              >
+                {loading ? 'Creating account…' : 'Create account'}
+              </Button>
+
+              <p className="text-center text-sm text-white/50 mt-6">
+                Already have an account?{' '}
+                <Link to="/login" className="text-primary-200 hover:text-primary-300 transition">Sign in</Link>
+              </p>
+            </form>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };

@@ -1,27 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Bot } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 import ChatMessage from './ChatMessage';
 import Input from '../ui/Input';
 
-interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
-}
+interface Message { id: string; text: string; sender: 'user' | 'bot'; timestamp: Date; }
 
 const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Hi there! I\'m FitBot 💪 — your personal guide to fitness, nutrition, and well-being. Ask me anything!',
-      sender: 'bot',
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([{
+    id: '1',
+    text: "Hi! I'm FitBot — your AI fitness coach. Ask me about workouts, recovery, or nutrition.",
+    sender: 'bot',
+    timestamp: new Date()
+  }]);
   const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -29,225 +23,159 @@ const ChatBot: React.FC = () => {
   useEffect(() => {
     if (isOpen) {
       inputRef.current?.focus();
-      scrollToBottom();
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [isOpen, messages]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const handleSend = () => {
     if (!message.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: message,
-      sender: 'user',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    const userMessage: Message = { id: Date.now().toString(), text: message, sender: 'user', timestamp: new Date() };
+    setMessages(p => [...p, userMessage]);
     setMessage('');
     setIsThinking(true);
-
-    // Simulate bot thinking
     setTimeout(() => {
-      const botResponse = getBotResponse(message);
-
-      const botMessage: Message = {
+      setMessages(p => [...p, {
         id: (Date.now() + 1).toString(),
-        text: botResponse,
+        text: getBotResponse(userMessage.text),
         sender: 'bot',
         timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, botMessage]);
+      }]);
       setIsThinking(false);
-    }, 1500);
+    }, 1100);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSend();
-    }
-  };
+  const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSend(); };
 
-  const getBotResponse = (userMessage: string): string => {
-    const lowerCaseMessage = userMessage.toLowerCase();
-
-    // Greetings
-    if (lowerCaseMessage.includes('hi') || lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hey') || lowerCaseMessage.includes('good morning') || lowerCaseMessage.includes('good evening')) {
-      return "Hey there! I'm FitBot 💪 — your personal guide to fitness, nutrition, and well-being. Ask me anything!";
-    }
-
-    // Goodbyes
-    if (lowerCaseMessage.includes('bye') || lowerCaseMessage.includes('goodbye') || lowerCaseMessage.includes('see you') || lowerCaseMessage.includes('thanks') || lowerCaseMessage.includes('talk later')) {
-      return "Take care! Stay strong, stay healthy! 👋";
-    }
-
-    // Fitness Queries
-    if (lowerCaseMessage.includes('how do i lose belly fat')) {
-      return "For losing belly fat, combine cardio (like jogging or cycling) with core workouts (planks, crunches). Consistency is key!";
-    }
-    if (lowerCaseMessage.includes('suggest a workout plan')) {
-      return "Beginner workout plan: \n- Monday: Full-body strength (bodyweight) \n- Tuesday: 20-min walk + stretching \n- Wednesday: Rest or yoga \n- Thursday: Lower body focus \n- Friday: Cardio (HIIT or dance)";
-    }
-    if (lowerCaseMessage.includes('i want to gain muscle')) {
-      return "To build muscle, aim for strength training 4–5 days a week and consume a high-protein diet with a slight calorie surplus.";
-    }
-    if (lowerCaseMessage.includes('whats a good routine for beginners')) {
-      return "A good routine for beginners includes starting with bodyweight exercises and gradually increasing the intensity.";
-    }
-    if (lowerCaseMessage.includes('home workout tips')) {
-      return "Home workout tips: Use bodyweight exercises, resistance bands, and household items for weights. Follow online tutorials for guidance.";
-    }
-    if (lowerCaseMessage.includes('what should i eat to lose weight')) {
-      return "Stick to whole foods: leafy greens, lean proteins, and complex carbs. Cut down on sugar and fried items. Drink plenty of water.";
-    }
-    if (lowerCaseMessage.includes('give me a meal plan for weight loss')) {
-      return "✔ *Breakfast*: Greek yogurt + berries  \n✔ *Lunch*: Grilled chicken + quinoa salad  \n✔ *Dinner*: Stir-fried tofu + veggies  \nSnack: Handful of almonds or boiled eggs.";
-    }
-    if (lowerCaseMessage.includes('best foods to gain muscle')) {
-      return "Eat high-protein foods like eggs, chicken, lentils, cottage cheese, and protein shakes. Include healthy fats and complex carbs.";
-    }
-    if (lowerCaseMessage.includes('is keto a good diet')) {
-      return "The keto diet can help with fat loss, but it may not suit everyone. It’s best under professional guidance.";
-    }
-    if (lowerCaseMessage.includes('how many calories should i eat')) {
-      return "It depends on your goals, age, and activity. For weight loss, eat 10–20% fewer calories than you burn daily.";
-    }
-    if (lowerCaseMessage.includes('how much protein do i need')) {
-      return "Aim for 1.6–2.2g of protein per kg of body weight daily if you're working out.";
-    }
-    if (lowerCaseMessage.includes('what are healthy snacks')) {
-      return "Try nuts, fruits, boiled eggs, hummus with carrots, or Greek yogurt with honey.";
-    }
-    if (lowerCaseMessage.includes('should i avoid carbs')) {
-      return "No need to avoid carbs entirely. Choose whole grains like oats, brown rice, and sweet potatoes over refined ones.";
-    }
-    if (lowerCaseMessage.includes('i feel stressed and tired')) {
-      return "Try deep breathing, short walks, or journaling. Take breaks and stay hydrated. Prioritize rest and seek support if needed.";
-    }
-    if (lowerCaseMessage.includes('how can i improve my sleep')) {
-      return "Sleep tips:  \n- Go to bed/wake up at the same time  \n- No screens 1 hour before bed  \n- Avoid caffeine after 2 PM  \n- Keep your room dark and cool";
-    }
-    if (lowerCaseMessage.includes('i feel unmotivated')) {
-      return "Start small. Even 5 minutes of movement helps. Set one tiny, achievable goal today. Progress, not perfection!";
-    }
-    if (lowerCaseMessage.includes('how to stay mentally healthy')) {
-      return "Eat well, sleep 7–9 hours, exercise regularly, and connect with others. Journaling and mindfulness also help.";
-    }
-    if (lowerCaseMessage.includes('what to do when i feel anxious')) {
-      return "Take 5 deep breaths, journal how you feel, or go for a walk. Avoid stimulants and practice grounding techniques.";
-    }
-    if (lowerCaseMessage.includes('is meditation useful')) {
-      return "Yes, daily meditation (even 5–10 mins) reduces stress, improves focus, and boosts mental clarity.";
-    }
-    if (lowerCaseMessage.includes('i feel overwhelmed')) {
-      return "Break tasks into smaller chunks. Prioritize 1–2 things only. Take breaks and don’t hesitate to ask for help.";
-    }
-    if (lowerCaseMessage.includes('morning routine for mental health')) {
-      return "Try this:  \n1. Wake early  \n2. 5 mins of gratitude  \n3. Light stretching  \n4. Nutritious breakfast  \n5. Set your top 3 daily goals";
-    }
-    if (lowerCaseMessage.includes('whats a good workout routine for beginners')) {
-      return "Start with 3–4 days/week. Focus on:  \n- Day 1: Full-body strength (bodyweight)  \n- Day 2: 20-min walk + stretching  \n- Day 3: Rest or yoga  \n- Day 4: Cardio (cycling, brisk walking)";
-    }
-    if (lowerCaseMessage.includes('how do i lose belly fat')) {
-      return "Combine regular cardio (30 min daily) with core exercises and a clean diet. Sleep and stress also affect fat loss.";
-    }
-    if (lowerCaseMessage.includes('best exercises to build muscle')) {
-      return "Focus on compound lifts like squats, deadlifts, bench press, and pull-ups. Train 4–5x per week.";
-    }
-    if (lowerCaseMessage.includes('can i work out at home')) {
-      return "Absolutely! Use bodyweight routines: push-ups, squats, planks, lunges, jumping jacks. A yoga mat is all you need to start.";
-    }
-    if (lowerCaseMessage.includes('how often should i exercise')) {
-      return "Aim for 3–5 days/week depending on your goals and recovery. Mix strength and cardio.";
-    }
-    if (lowerCaseMessage.includes('how long should i work out daily')) {
-      return "30–60 minutes is ideal. Consistency matters more than duration.";
-    }
-    if (lowerCaseMessage.includes('is walking enough for fitness')) {
-      return "Yes, especially for beginners. Try brisk walking 30 mins/day and build from there.";
-    }
-    if (lowerCaseMessage.includes('i want to tone my body')) {
-      return "Focus on high-rep resistance training and combine it with cardio. Keep your diet clean and protein-rich.";
-    }
-    if (lowerCaseMessage.includes('tips for staying consistent with workouts')) {
-      return "Set realistic goals, track progress, and make it enjoyable. Music, a buddy, or an app can help you stay motivated.";
-    }
-
-    // Fallback response
-    return "I'm still learning! Try asking about fitness, weight loss, workouts, or hydration.";
+  const getBotResponse = (msg: string): string => {
+    const l = msg.toLowerCase();
+    if (l.includes('hi') || l.includes('hello') || l.includes('hey')) return "Hey there! I'm FitBot 💪 — your AI fitness coach. Ask me anything!";
+    if (l.includes('bye') || l.includes('thanks')) return "Take care! Stay strong, stay consistent 👋";
+    if (l.includes('belly fat'))   return "Combine 30 min daily cardio with core work (planks, crunches). Consistency beats intensity.";
+    if (l.includes('muscle'))      return "Strength train 4–5x/week, eat 1.6–2.2g protein per kg, sleep 7–9 hours. Progressive overload is the key.";
+    if (l.includes('meal plan'))   return "Try: breakfast — Greek yogurt + berries · lunch — grilled chicken + quinoa · dinner — tofu stir-fry · snack — almonds.";
+    if (l.includes('protein'))     return "Aim for 1.6–2.2g per kg of bodyweight daily when training.";
+    if (l.includes('sleep'))       return "Same bedtime daily, no screens 1h before, dark room, cool temperature. Magnesium helps.";
+    if (l.includes('unmotivated')) return "Start with 5 minutes. Tiny wins compound. You don't need motivation — you need motion.";
+    if (l.includes('home workout'))return "Push-ups, squats, planks, lunges, jumping jacks. A yoga mat is all you need to start.";
+    return "I'm still learning! Try asking about workouts, muscle gain, nutrition, or recovery.";
   };
 
   return (
     <>
-      {/* Chat button */}
-      <button
+      {/* Launcher */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1, type: 'spring', stiffness: 260, damping: 20 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 p-4 rounded-full z-40 transition-all duration-300 ${
-          isOpen ? 'bg-red-500 hover:bg-red-600' : 'bg-neon-blue hover:bg-neon-blue/80 hover:shadow-neon-blue'
+        className={`fixed bottom-6 right-6 z-40 w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+          isOpen
+            ? 'glass-strong text-white border-white/15'
+            : 'bg-gradient-to-br from-primary to-primary-700 text-white shadow-glow border border-primary-300/40'
         }`}
       >
-        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
-      </button>
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.span key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+              <X size={20} />
+            </motion.span>
+          ) : (
+            <motion.span key="msg" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+              <MessageSquare size={20} />
+            </motion.span>
+          )}
+        </AnimatePresence>
+        {!isOpen && (
+          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary-200 border-2 border-ink-900">
+            <span className="absolute inset-0 rounded-full bg-primary-200 animate-ping" />
+          </span>
+        )}
+      </motion.button>
 
-      {/* Chat window */}
-      {isOpen && (
-        <div className="fixed bottom-20 right-6 w-full max-w-sm bg-background-secondary border border-metallic-dark rounded-lg shadow-lg z-40 flex flex-col overflow-hidden animate-fade-in">
-          {/* Header */}
-          <div className="bg-background-tertiary p-4 border-b border-metallic-dark">
-            <h3 className="font-semibold">FitBot 💬</h3>
-            <p className="text-xs text-text-secondary">Your fitness assistant</p>
-          </div>
-          
-          {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto max-h-96">
-            {messages.map((msg) => (
-              <ChatMessage
-                key={msg.id}
-                message={msg.text}
-                isBot={msg.sender === 'bot'}
-              />
-            ))}
-            {isThinking && (
-              <div className="flex mb-4 justify-start">
-                <div className="flex-shrink-0 mr-2">
-                  <div className="w-8 h-8 rounded-full bg-neon-blue flex items-center justify-center">
-                    <Bot size={16} className="text-background-primary" />
+      {/* Window */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed bottom-24 right-6 w-full max-w-sm z-40"
+          >
+            <div className="glass-strong rounded-3xl shadow-glass overflow-hidden">
+              {/* Header */}
+              <div className="relative px-5 py-4 border-b border-white/8">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-primary/40 blur-lg rounded-full" />
+                    <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-700 flex items-center justify-center border border-primary-300/40">
+                      <Sparkles size={16} />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">FitBot</div>
+                    <div className="text-xs text-white/50 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.7)]" />
+                      Online · AI fitness coach
+                    </div>
                   </div>
                 </div>
-                <div className="max-w-[80%] px-4 py-2 rounded-lg bg-background-tertiary text-text-primary border border-metallic-dark">
-                  FitBot is thinking...
-                </div>
               </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-          
-          {/* Input */}
-          <div className="p-4 border-t border-metallic-dark flex">
-            <Input
-              ref={inputRef}
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              className="flex-1 bg-background-tertiary border border-metallic-dark rounded-l-md py-2 px-3 focus:outline-none focus:border-neon-blue text-text-primary"
-            />
-            <Button
-              onClick={handleSend}
-              className="rounded-l-none"
-              disabled={!message.trim()}
-            >
-              <Send size={18} />
-            </Button>
-          </div>
-        </div>
-      )}
+
+              {/* Messages */}
+              <div className="px-4 py-4 h-80 overflow-y-auto bg-gradient-to-b from-transparent to-ink-900/30">
+                {messages.map(m => (
+                  <ChatMessage key={m.id} message={m.text} isBot={m.sender === 'bot'} />
+                ))}
+                {isThinking && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary-700 flex items-center justify-center border border-primary-300/40 shadow-glow">
+                      <Sparkles size={14} />
+                    </div>
+                    <div className="glass rounded-2xl rounded-bl-md px-4 py-3">
+                      <div className="flex gap-1">
+                        {[0, 1, 2].map(i => (
+                          <motion.span
+                            key={i}
+                            className="w-1.5 h-1.5 rounded-full bg-primary-300"
+                            animate={{ opacity: [0.3, 1, 0.3] }}
+                            transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input */}
+              <div className="p-3 border-t border-white/8 flex gap-2">
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask FitBot anything…"
+                  className="!mb-0"
+                />
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleSend}
+                  disabled={!message.trim()}
+                  icon={<Send size={14} />}
+                >
+                  Send
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
